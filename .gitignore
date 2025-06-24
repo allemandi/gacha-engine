@@ -34,10 +34,8 @@ Thumbs.db
 logs/
 *.log
 
-# Lockfiles (if using only one package manager)
+# Lockfiles
 yarn.lock
-# package-lock.json
-# pnpm-lock.yaml
 
 # Misc
 *.swp
