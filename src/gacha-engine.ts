@@ -14,6 +14,7 @@ export class GachaEngine {
   private rarityRatesScaled: Record<string, number> = {};
   private flatRateMap: Map<string, number> = new Map();
   private dropRateCacheScaled = new Map<string, number>();
+  private flatRateRateUpItems: string[] = [];
 
   constructor(config: GachaEngineConfig) {
     this.mode = config.mode;
@@ -25,12 +26,17 @@ export class GachaEngine {
       this.validateConfig(weightedConfig.rarityRates);
     } else if (config.mode === 'flatRate') {
       const flatConfig = config as FlatRateGachaEngineConfig;
+      this.pools = flatConfig.pools; // Keep pools for reference
+
       for (const pool of flatConfig.pools) {
         for (const item of pool.items) {
           if (item.weight < 0) {
             throw new Error(`FlatRate item "${item.name}" must have non-negative weight`);
           }
-          this.flatRateMap.set(item.name, item.weight); // Here, interpreted as direct probability
+          this.flatRateMap.set(item.name, item.weight); // direct probability
+          if (item.rateUp) {
+            this.flatRateRateUpItems.push(item.name);
+          }
         }
       }
       const total = Array.from(this.flatRateMap.values()).reduce((sum, v) => sum + v, 0);
@@ -150,17 +156,13 @@ export class GachaEngine {
     return Math.ceil(Math.log(1 - targetProbability) / Math.log(1 - rate));
   }
 
- getRateUpItems(): string[] {
-  if (this.mode === 'weighted') {
-    return this.pools.flatMap(p => p.items.filter(i => i.rateUp).map(i => i.name));
-  } else {
-    if (this.pools.length > 0) {
+  getRateUpItems(): string[] {
+    if (this.mode === 'weighted') {
       return this.pools.flatMap(p => p.items.filter(i => i.rateUp).map(i => i.name));
+    } else {
+      return this.flatRateRateUpItems;
     }
-    return [];
   }
-}
-
 
   getAllItemDropRates(): { name: string; dropRate: number; rarity: string }[] {
     if (this.mode === 'flatRate') {
