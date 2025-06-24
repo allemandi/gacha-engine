@@ -1,6 +1,6 @@
 {
     "name": "@allemandi/gacha-engine",
-    "version": "0.3.4",
+    "version": "0.3.6",
     "description": "Practical, type-safe toolkit for simulating and understanding gacha rates and rate-ups.",
     "main": "dist/index.cjs",
     "module": "dist/index.module.js",
