@@ -45,8 +45,8 @@ const pools = [
   {
     rarity: 'SSR',
     items: [
-      { name: 'Super Hobo', weight: 0.8, rateUp: true },  // Rate-up: 0.8% of SSR pool
-      { name: 'Broke King', weight: 0.4 },                     // Standard: 0.4% of SSR pool  
+      { name: 'Super Hobo', weight: 0.8, rateUp: true },
+      { name: 'Broke King', weight: 0.4 },
       { name: 'Cardboard Hero', weight: 0.4 },
       { name: 'Newspaper Warmer', weight: 0.4 }
     ]
@@ -54,17 +54,25 @@ const pools = [
   {
     rarity: 'SR', 
     items: [
-      { name: 'Cold Salaryman', weight: 1.5, rateUp: true },           // Rate-up: 1.5% of SR pool
-      { name: 'Numb Artist', weight: 1.8 },                      // Standard 4-star rates
+      { name: 'Cold Salaryman', weight: 1.5, rateUp: true },
+      { name: 'Numb Artist', weight: 1.8 },
       { name: 'Crying Cook', weight: 1.8 },
       { name: 'Lonely Cat', weight: 1.8 }
+    ]
+  },
+  {
+    rarity: 'R',
+    items: [
+      { name: 'Regular Joe', weight: 5.0 },
+      { name: 'Normal Person', weight: 5.0 }
     ]
   }
 ];
 
 const rarityRates = {
-  SSR: 0.01,  // 1% chance for SSR (5-star)
-  SR: 0.03,   // 3% chance for SR (4-star)
+  SSR: 0.01,  // 1% chance for SSR
+  SR: 0.05,   // 5% chance for SR  
+  R: 0.94     // 94% chance for R
 };
 
 const engine = new GachaEngine({ pools, rarityRates });
@@ -92,14 +100,25 @@ console.log(`Current rate-up items: ${rateUpItems.join(', ')}`);
 **CommonJS**
 ```js
 const { GachaEngine } = require('@allemandi/gacha-engine');
+
+// Same configuration as above
+const engine = new GachaEngine({ pools, rarityRates });
+console.log('Single roll:', engine.roll());
 ```
 
-**UMD**
+**UMD (Browser)**
 ```html
 <script src="https://unpkg.com/@allemandi/gacha-engine"></script>
 <script>
-  const engine = new AllemandiGachaEngine.GachaEngine({
-    rarityRates: { 'SSR': 0.01 },
+  // Access the GachaEngine class
+  const { GachaEngine } = window.AllemandiGachaEngine;
+  
+  const engine = new GachaEngine({
+    rarityRates: { 
+      SSR: 0.01,
+      SR: 0.05, 
+      R: 0.94 
+    },
     pools: [
       {
         rarity: 'SSR',
@@ -107,12 +126,24 @@ const { GachaEngine } = require('@allemandi/gacha-engine');
           { name: 'Park Master', weight: 0.7, rateUp: true },
           { name: 'Trash Titan', weight: 0.3 }
         ]
+      },
+      {
+        rarity: 'SR',
+        items: [
+          { name: 'Street Sweeper', weight: 1.0 }
+        ]
+      },
+      {
+        rarity: 'R',
+        items: [
+          { name: 'Regular Person', weight: 1.0 }
+        ]
       }
     ]
   });
 
   console.log('Single roll:', engine.roll());
-  // Single roll: ['Park Master'] or ['Trash Titan']
+  console.log('Drop rate for Park Master:', engine.getItemDropRate('Park Master'));
 </script>
 ```
 
@@ -124,7 +155,7 @@ const { GachaEngine } = require('@allemandi/gacha-engine');
 Creates a new GachaEngine instance with validation.
 
 **Config Properties:**
-- `rarityRates` **(required)**: Object mapping rarity names to their base probabilities (must sum to ≤ 1.0)
+- `rarityRates` **(required)**: Object mapping rarity names to their base probabilities (should sum to ≤ 1.0)
 - `pools` **(required)**: Array of rarity pools, each containing:
   - `rarity`: String identifier matching a key in `rarityRates`
   - `items`: Array of items with:
