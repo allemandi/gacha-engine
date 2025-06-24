@@ -85,24 +85,21 @@ const engine = new GachaEngine({ mode: 'weighted', pools, rarityRates });
 console.log('10 rolls:', engine.roll(10).join(', '));
 
 const rate = engine.getItemDropRate('Super Hobo');
-console.log('Drop rate for Super Hobo:', (rate * 100).toFixed(3) + '%');
+console.log('Drop rate for Super Hobo:', (rate * 100) + '%');
 // ~0.4% → (0.8 / 1.6) * 0.01 = 0.005 → 0.5%
 
 const cumulative = engine.getCumulativeProbabilityForItem('Super Hobo', 300);
-console.log('Probability in 300 rolls:', (cumulative * 100).toFixed(1) + '%');
+console.log('Probability in 300 rolls:', (cumulative * 100) + '%');
 // ~77.7%
 
 console.log('Rolls for 50% chance:', engine.getRollsForTargetProbability('Super Hobo', 0.5));
-// ~138
+// 139
 
 console.log('Rate-up items:', engine.getRateUpItems().join(', '));
 // Super Hobo, Cold Salaryman
-
-console.log('All items:', engine.getAllItems().join(', '));
-// Super Hobo, Broke King, Cardboard Hero, Cold Salaryman, Numb Artist, Crying Cook, Regular Joe, Normal Person
 ```
 
-**CommonJS (Flat Mode)**
+**CommonJS (Flat Rate Mode)**
 ```js
 const { GachaEngine } = require('@allemandi/gacha-engine');
 
@@ -110,30 +107,30 @@ const pools = [
   {
     rarity: 'SSR',
     items: [
-      { name: 'God-Tier Rat', flatRate: 0.003, rateUp: true },
-      { name: 'Dumpster King', flatRate: 0.002 }
+      { name: 'God-Tier Rat', weight: 0.003, rateUp: true },
+      { name: 'Dumpster King', weight: 0.002 }
     ]
   },
   {
     rarity: 'SR',
     items: [
-      { name: 'Sleepy Chef', flatRate: 0.015 }
+      { name: 'Sleepy Chef', weight: 0.015 }
     ]
   },
   {
     rarity: 'R',
     items: [
-      { name: 'Unknown Student', flatRate: 0.1 }
+      { name: 'Unknown Student', weight: 0.1 }
     ]
   }
 ];
 
-const engine = new GachaEngine({ mode: 'flat', pools });
+const engine = new GachaEngine({ mode: 'flatRate', pools });
 
 console.log('Roll x5:', engine.roll(5).join(', '));
 
 const dropRate = engine.getItemDropRate('God-Tier Rat');
-console.log('Drop rate for God-Tier Rat:', (dropRate * 100).toFixed(3) + '%');
+console.log('Drop rate for God-Tier Rat:', (dropRate * 100) + '%');
 // 0.3%
 
 const cumulative = engine.getCumulativeProbabilityForItem('God-Tier Rat', 500);

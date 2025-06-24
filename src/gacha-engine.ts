@@ -150,9 +150,17 @@ export class GachaEngine {
     return Math.ceil(Math.log(1 - targetProbability) / Math.log(1 - rate));
   }
 
-  getRateUpItems(): string[] {
+ getRateUpItems(): string[] {
+  if (this.mode === 'weighted') {
     return this.pools.flatMap(p => p.items.filter(i => i.rateUp).map(i => i.name));
+  } else {
+    if (this.pools.length > 0) {
+      return this.pools.flatMap(p => p.items.filter(i => i.rateUp).map(i => i.name));
+    }
+    return [];
   }
+}
+
 
   getAllItemDropRates(): { name: string; dropRate: number; rarity: string }[] {
     if (this.mode === 'flatRate') {
