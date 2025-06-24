@@ -1,4 +1,3 @@
-
 export interface RarityInput {
     rarity: string;
     items: GachaItem[];
@@ -6,11 +5,11 @@ export interface RarityInput {
 
 export interface GachaItem {
     name: string;
-    probability: number;
+    weight: number;
     rateUp?: boolean;
 }
 
 export interface GachaEngineConfig {
-    rarityRates?: Record<string, number>;
+    rarityRates: Record<string, number>;
     pools: RarityInput[];
 }

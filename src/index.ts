@@ -1,1 +1,2 @@
-export { GachaEngine } from "./gacha-engine";
+export * from './gacha-engine';
+export * from './types';

@@ -19,9 +19,11 @@
 
 
 ## ✨ Features
-- 🔍 Determine how many rolls are needed to reach a target probability for an item
-- 📐 Estimate cumulative probabilities over multiple rolls
-- ⚡ Lightweight and fast rarity probabilities
+- 🎲 **Roll simulation**: Perform actual gacha rolls with weighted probabilities
+- 🔍 **Probability analysis**: Calculate drop rates, cumulative probabilities, and rolls needed
+- 📐 **Multi-rarity support**: Handle complex gacha systems with multiple rarity tiers
+- ⚡ **Performance optimized**: Cached calculations and efficient algorithms
+- 🛡️ **Type-safe**: Full TypeScript support with comprehensive validation
 
 ## 🛠️ Installation
 ```bash
@@ -43,38 +45,48 @@ const pools = [
   {
     rarity: 'SSR',
     items: [
-      { name: 'Ultra Sword', probability: 0.01, rateUp: true },
-      { name: 'Magic Wand', probability: 0.02 },
-      { name: 'Useless SSR Loot', probability: 0.97 }
+      { name: 'Super Hobo', weight: 0.8, rateUp: true },  // Rate-up: 0.8% of SSR pool
+      { name: 'Broke King', weight: 0.4 },                     // Standard: 0.4% of SSR pool  
+      { name: 'Cardboard Hero', weight: 0.4 },
+      { name: 'Newspaper Warmer', weight: 0.4 }
     ]
   },
   {
-    rarity: 'SR',
+    rarity: 'SR', 
     items: [
-      { name: 'Steel Shield', probability: 0.1 },
-      { name: 'Healing Potion', probability: 0.2 }
+      { name: 'Cold Salaryman', weight: 1.5, rateUp: true },           // Rate-up: 1.5% of SR pool
+      { name: 'Numb Artist', weight: 1.8 },                      // Standard 4-star rates
+      { name: 'Crying Cook', weight: 1.8 },
+      { name: 'Lonely Cat', weight: 1.8 }
     ]
   }
 ];
 
 const rarityRates = {
-  SSR: 0.05,
-  SR: 0.3,
+  SSR: 0.01,  // 1% chance for SSR (5-star)
+  SR: 0.03,   // 3% chance for SR (4-star)
 };
 
 const engine = new GachaEngine({ pools, rarityRates });
 
-const dropRate = engine.getItemDropRate('Ultra Sword');
-console.log(`Drop rate for Ultra Sword: ${dropRate}`);
+// Perform actual rolls
+const results = engine.roll(10);
+console.log(`10 rolls result: ${results.join(', ')}`);
 
-const cumulativeProb = engine.getCumulativeProbabilityForItem('Ultra Sword', 10);
-console.log(`Probability of getting Ultra Sword in 10 rolls: ${cumulativeProb}`);
+// Analyze probabilities  
+const dropRate = engine.getItemDropRate('Super Hobo');
+console.log(`Drop rate for Super Hobo: ${(dropRate * 100).toFixed(3)}%`);
+// Output: ~0.4% (0.8/2.0 * 0.01)
 
-const rollsNeeded = engine.getRollsForTargetProbability('Ultra Sword', 0.9);
-console.log(`Rolls needed for 90% chance: ${rollsNeeded}`);
+const cumulativeProb = engine.getCumulativeProbabilityForItem('Super Hobo', 300);
+console.log(`Probability of getting Super Hobo in 300 rolls: ${(cumulativeProb * 100).toFixed(1)}%`);
+
+const rollsNeeded = engine.getRollsForTargetProbability('Super Hobo', 0.5);
+console.log(`Rolls needed for 50% chance: ${rollsNeeded}`);
 
 const rateUpItems = engine.getRateUpItems();
 console.log(`Current rate-up items: ${rateUpItems.join(', ')}`);
+// Output: "Super Hobo, Cold Salaryman"
 ```
 
 **CommonJS**
@@ -84,56 +96,79 @@ const { GachaEngine } = require('@allemandi/gacha-engine');
 
 **UMD**
 ```html
- <script src="https://unpkg.com/@allemandi/gacha-engine"></script>
-  <script>
-    const engine = new window.AllemandiGachaEngine.GachaEngine({
-      pools: [
-        {
-          rarity: '5★',
-          items: [{ name: 'Rate Up Character', probability: 0.008 }]
-        }
-      ]
-    });
+<script src="https://unpkg.com/@allemandi/gacha-engine"></script>
+<script>
+  const engine = new AllemandiGachaEngine.GachaEngine({
+    rarityRates: { 'SSR': 0.01 },
+    pools: [
+      {
+        rarity: 'SSR',
+        items: [
+          { name: 'Park Master', weight: 0.7, rateUp: true },
+          { name: 'Trash Titan', weight: 0.3 }
+        ]
+      }
+    ]
+  });
 
-    console.log('Rate up:', engine.getItemDropRate('Rate Up Character'));
-    // Rate up: 0.008
-  </script>
+  console.log('Single roll:', engine.roll());
+  // Single roll: ['Park Master'] or ['Trash Titan']
+</script>
 ```
 
 ## 📘 API
+
+### Constructor
 `new GachaEngine(config: GachaEngineConfig)`
 
-Creates a new GachaEngine instance.
+Creates a new GachaEngine instance with validation.
 
-- `config.pools`: Array of item pools, each with a rarity and list of items (each with name, probability, optional `rateUp` flag).
-
-- `config.rarityRates`: Optional object mapping rarities to base probabilities.
+**Config Properties:**
+- `rarityRates` **(required)**: Object mapping rarity names to their base probabilities (must sum to ≤ 1.0)
+- `pools` **(required)**: Array of rarity pools, each containing:
+  - `rarity`: String identifier matching a key in `rarityRates`
+  - `items`: Array of items with:
+    - `name`: Unique item identifier
+    - `weight`: Relative weight within the rarity pool (higher = more likely)
+    - `rateUp?`: Optional boolean flag for rate-up items
 
 ### Methods
+
+#### Rolling
+`roll(count?: number): string[]`
+- Simulate gacha rolls and returns item names
+- `count`: Number of rolls to perform (default: 1)
+- Returns array of item names
+
+#### Analysis
 `getItemDropRate(name: string): number`
-- Returns the effective drop rate of an item by name.
+- Returns the effective drop rate (0-1) for a specific item
+- Calculated as: `(item.weight / pool.totalWeight) × rarity.baseRate`
 
 `getRarityProbability(rarity: string): number`
-- Returns the base probability assigned to a rarity pool.
+- Returns the base probability for a rarity tier
 
 `getCumulativeProbabilityForItem(name: string, rolls: number): number`
-- Returns the probability of obtaining the specified item at least once within the given number of rolls.
+- Calculates probability of getting the item at least once in N rolls
+- Uses formula: `1 - (1 - dropRate)^rolls`
 
 `getRollsForTargetProbability(name: string, targetProbability: number): number`
-- Returns the minimum number of rolls needed to reach or exceed the target probability for the specified item.
+- Returns minimum rolls needed to reach target probability for an item
+- Returns `Infinity` if item has zero drop rate
 
+#### Utility
 `getRateUpItems(): string[]`
-- Returns a list of all item names currently marked as rate-up.
+- Returns names of all items marked with `rateUp: true`
 
-`getAllItemDropRates(): { name: string; dropRate: number; rarity: string }[]`
-- Returns an array of all items with their calculated drop rates and rarities.
+`getAllItemDropRates(): Array<{name: string, dropRate: number, rarity: string}>`
+- Returns complete list of all items with their calculated drop rates and rarities
 
 ## 🧪 Tests
 
 > Available in the GitHub repo only.
 
 ```bash
-# Run the test suite with Jest
+# Run the test suite with Vitest
 yarn test
 # or
 npm test
