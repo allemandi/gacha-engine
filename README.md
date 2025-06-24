@@ -3,12 +3,15 @@
 [![NPM Version](https://img.shields.io/npm/v/@allemandi/gacha-engine)](https://www.npmjs.com/package/@allemandi/gacha-engine)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/allemandi/gacha-engine/blob/main/LICENSE)
 
-> **Practical, type-safe toolkit for simulating and understanding gacha rates and rate-ups.**
-> 
-> Works in Node.js, browsers – supports ESM, CommonJS, and UMD
+> **Practical, type-safe toolkit for simulating and understanding gacha rates and rate-ups.**  
+> Supports `"weighted"` and `"flatRate"` modes for different gacha strategies.  
+> Works in Node.js and browsers – supports ESM, CommonJS, and UMD.
+
+---
 
 <!-- omit from toc -->
 ## 🔖 Table of Contents
+
 - [✨ Features](#-features)
 - [🛠️ Installation](#️-installation)
 - [🚀 Quick Usage Examples](#-quick-usage-examples)
@@ -17,13 +20,17 @@
 - [🔗 Related Projects](#-related-projects)
 - [🤝 Contributing](#-contributing)
 
+---
 
 ## ✨ Features
-- 🎲 **Roll simulation**: Perform actual gacha rolls with weighted probabilities
-- 🔍 **Probability analysis**: Calculate drop rates, cumulative probabilities, and rolls needed
-- 📐 **Multi-rarity support**: Handle complex gacha systems with multiple rarity tiers
-- ⚡ **Performance optimized**: Cached calculations and efficient algorithms
-- 🛡️ **Type-safe**: Full TypeScript support with comprehensive validation
+
+- 🎲 **Roll simulation** – Perform gacha rolls with weighted or flat-rate logic  
+- 🔍 **Probability analysis** – Drop rates, cumulative probabilities, target probabilities  
+- 📐 **Multi-rarity support** – Flexible rarity-based or item-based probability distributions  
+- ⚡ **Performance optimized** – Efficient with cached calculations  
+- 🛡️ **Type-safe** – Written in TypeScript with strict configuration validation
+
+---
 
 ## 🛠️ Installation
 ```bash
@@ -37,7 +44,7 @@ npm install @allemandi/gacha-engine
 
 ## 🚀 Quick Usage Examples
 
-**ESM**
+**ESM (Weighted Mode)**
 ```js
 import { GachaEngine } from '@allemandi/gacha-engine';
 
@@ -47,17 +54,15 @@ const pools = [
     items: [
       { name: 'Super Hobo', weight: 0.8, rateUp: true },
       { name: 'Broke King', weight: 0.4 },
-      { name: 'Cardboard Hero', weight: 0.4 },
-      { name: 'Newspaper Warmer', weight: 0.4 }
+      { name: 'Cardboard Hero', weight: 0.4 }
     ]
   },
   {
-    rarity: 'SR', 
+    rarity: 'SR',
     items: [
       { name: 'Cold Salaryman', weight: 1.5, rateUp: true },
       { name: 'Numb Artist', weight: 1.8 },
-      { name: 'Crying Cook', weight: 1.8 },
-      { name: 'Lonely Cat', weight: 1.8 }
+      { name: 'Crying Cook', weight: 1.8 }
     ]
   },
   {
@@ -70,80 +75,138 @@ const pools = [
 ];
 
 const rarityRates = {
-  SSR: 0.01,  // 1% chance for SSR
-  SR: 0.05,   // 5% chance for SR  
-  R: 0.94     // 94% chance for R
+  SSR: 0.01,
+  SR: 0.05,
+  R: 0.94
 };
 
-const engine = new GachaEngine({ pools, rarityRates });
+const engine = new GachaEngine({ mode: 'weighted', pools, rarityRates });
 
-// Perform actual rolls
-const results = engine.roll(10);
-console.log(`10 rolls result: ${results.join(', ')}`);
+console.log('10 rolls:', engine.roll(10).join(', '));
 
-// Analyze probabilities  
-const dropRate = engine.getItemDropRate('Super Hobo');
-console.log(`Drop rate for Super Hobo: ${(dropRate * 100).toFixed(3)}%`);
-// Output: ~0.4% (0.8/2.0 * 0.01)
+const rate = engine.getItemDropRate('Super Hobo');
+console.log('Drop rate for Super Hobo:', (rate * 100).toFixed(3) + '%');
+// ~0.4% → (0.8 / 1.6) * 0.01 = 0.005 → 0.5%
 
-const cumulativeProb = engine.getCumulativeProbabilityForItem('Super Hobo', 300);
-console.log(`Probability of getting Super Hobo in 300 rolls: ${(cumulativeProb * 100).toFixed(1)}%`);
+const cumulative = engine.getCumulativeProbabilityForItem('Super Hobo', 300);
+console.log('Probability in 300 rolls:', (cumulative * 100).toFixed(1) + '%');
+// ~77.7%
 
-const rollsNeeded = engine.getRollsForTargetProbability('Super Hobo', 0.5);
-console.log(`Rolls needed for 50% chance: ${rollsNeeded}`);
+console.log('Rolls for 50% chance:', engine.getRollsForTargetProbability('Super Hobo', 0.5));
+// ~138
 
-const rateUpItems = engine.getRateUpItems();
-console.log(`Current rate-up items: ${rateUpItems.join(', ')}`);
-// Output: "Super Hobo, Cold Salaryman"
+console.log('Rate-up items:', engine.getRateUpItems().join(', '));
+// Super Hobo, Cold Salaryman
+
+console.log('All items:', engine.getAllItems().join(', '));
+// Super Hobo, Broke King, Cardboard Hero, Cold Salaryman, Numb Artist, Crying Cook, Regular Joe, Normal Person
 ```
 
-**CommonJS**
+**CommonJS (Flat Mode)**
 ```js
 const { GachaEngine } = require('@allemandi/gacha-engine');
 
-// Same configuration as above
-const engine = new GachaEngine({ pools, rarityRates });
-console.log('Single roll:', engine.roll());
+const pools = [
+  {
+    rarity: 'SSR',
+    items: [
+      { name: 'God-Tier Rat', flatRate: 0.003, rateUp: true },
+      { name: 'Dumpster King', flatRate: 0.002 }
+    ]
+  },
+  {
+    rarity: 'SR',
+    items: [
+      { name: 'Sleepy Chef', flatRate: 0.015 }
+    ]
+  },
+  {
+    rarity: 'R',
+    items: [
+      { name: 'Unknown Student', flatRate: 0.1 }
+    ]
+  }
+];
+
+const engine = new GachaEngine({ mode: 'flat', pools });
+
+console.log('Roll x5:', engine.roll(5).join(', '));
+
+const dropRate = engine.getItemDropRate('God-Tier Rat');
+console.log('Drop rate for God-Tier Rat:', (dropRate * 100).toFixed(3) + '%');
+// 0.3%
+
+const cumulative = engine.getCumulativeProbabilityForItem('God-Tier Rat', 500);
+console.log('Chance after 500 rolls:', (cumulative * 100).toFixed(1) + '%');
+// ~78.5%
+
+const rollsFor50 = engine.getRollsForTargetProbability('God-Tier Rat', 0.5);
+console.log('Rolls for 50% chance:', rollsFor50);
+// ~231
+
+console.log('Rate-up items:', engine.getRateUpItems().join(', '));
+// God-Tier Rat
+
+console.log('All items:', engine.getAllItems().join(', '));
+// God-Tier Rat, Dumpster King, Sleepy Chef, Unknown Student
 ```
 
-**UMD (Browser)**
+**UMD (Browser, Weighted Mode)**
 ```html
 <script src="https://unpkg.com/@allemandi/gacha-engine"></script>
 <script>
-  // Access the GachaEngine class
   const { GachaEngine } = window.AllemandiGachaEngine;
-  
+
   const engine = new GachaEngine({
-    rarityRates: { 
-      SSR: 0.01,
-      SR: 0.05, 
-      R: 0.94 
+    mode: 'weighted',
+    rarityRates: {
+      SSR: 0.02,
+      SR: 0.08,
+      R: 0.90
     },
     pools: [
       {
         rarity: 'SSR',
         items: [
-          { name: 'Park Master', weight: 0.7, rateUp: true },
-          { name: 'Trash Titan', weight: 0.3 }
+          { name: 'Trash Wizard', weight: 1.0 },
+          { name: 'Park Master', weight: 1.0, rateUp: true }
         ]
       },
       {
         rarity: 'SR',
         items: [
-          { name: 'Street Sweeper', weight: 1.0 }
+          { name: 'Street Sweeper', weight: 2.0 },
+          { name: 'Bench Philosopher', weight: 1.0 }
         ]
       },
       {
         rarity: 'R',
         items: [
-          { name: 'Regular Person', weight: 1.0 }
+          { name: 'Bus Stop Ghost', weight: 5.0 }
         ]
       }
     ]
   });
 
-  console.log('Single roll:', engine.roll());
-  console.log('Drop rate for Park Master:', engine.getItemDropRate('Park Master'));
+  const rate = engine.getItemDropRate('Park Master');
+  const rolls = engine.getRollsForTargetProbability('Park Master', 0.75);
+  const cumulative = engine.getCumulativeProbabilityForItem('Park Master', 200);
+
+  console.log('1x Roll:', engine.roll());
+  console.log('Drop rate for Park Master:', (rate * 100).toFixed(2) + '%');
+  // 1.0 / 2.0 * 0.02 = 0.01 → 1.00%
+
+  console.log('Cumulative 200 rolls:', (cumulative * 100).toFixed(1) + '%');
+  // ~86.6%
+
+  console.log('Rolls for 75% chance:', rolls);
+  // ~139
+
+  console.log('Rate-up items:', engine.getRateUpItems().join(', '));
+  // Park Master
+
+  console.log('All items:', engine.getAllItems().join(', '));
+  // Trash Wizard, Park Master, Street Sweeper, Bench Philosopher, Bus Stop Ghost
 </script>
 ```
 
@@ -154,14 +217,38 @@ console.log('Single roll:', engine.roll());
 
 Creates a new GachaEngine instance with validation.
 
-**Config Properties:**
-- `rarityRates` **(required)**: Object mapping rarity names to their base probabilities (should sum to ≤ 1.0)
-- `pools` **(required)**: Array of rarity pools, each containing:
-  - `rarity`: String identifier matching a key in `rarityRates`
-  - `items`: Array of items with:
-    - `name`: Unique item identifier
-    - `weight`: Relative weight within the rarity pool (higher = more likely)
-    - `rateUp?`: Optional boolean flag for rate-up items
+**Config Options:**
+
+- Weighted Mode 
+```ts
+{
+  mode: 'weighted'; // (default)
+  rarityRates: Record<string, number>; // Required: must sum to 1.0
+  pools: Array<{
+    rarity: string; // Must match a key in `rarityRates`
+    items: Array<{
+      name: string;
+      weight: number;
+      rateUp?: boolean;
+    }>
+  }>
+}
+```
+- Flat Rate Mode
+
+```ts
+{
+  mode: 'flatRate';
+  pools: Array<{
+    rarity: string; // Used only for categorization
+    items: Array<{
+      name: string;
+      weight: number; // Interpreted as direct probability (must sum to 1.0 across all items)
+      rateUp?: boolean;
+    }>
+  }>
+}
+```
 
 ### Methods
 
@@ -173,26 +260,36 @@ Creates a new GachaEngine instance with validation.
 
 #### Analysis
 `getItemDropRate(name: string): number`
-- Returns the effective drop rate (0-1) for a specific item
-- Calculated as: `(item.weight / pool.totalWeight) × rarity.baseRate`
+- Returns the effective drop rate for a specific item
+  - In weighted mode:
+    - Computed as `dropRate = (item.weight / totalPoolWeight) × rarityBaseRate`
+  - In flat rate mode:
+    - `Returns the item's defined probability.
+  - Throws if the item does not exist.
 
 `getRarityProbability(rarity: string): number`
-- Returns the base probability for a rarity tier
+- Returns the base probability for a given rarity tier
+  - Only in "weighted" mode.
+  - Throws in flatRate mode.
 
 `getCumulativeProbabilityForItem(name: string, rolls: number): number`
 - Calculates probability of getting the item at least once in N rolls
 - Uses formula: `1 - (1 - dropRate)^rolls`
 
 `getRollsForTargetProbability(name: string, targetProbability: number): number`
-- Returns minimum rolls needed to reach target probability for an item
+- Calculates the minimum number of rolls needed to reach a specific probability of pulling a given item.
 - Returns `Infinity` if item has zero drop rate
+- Returns 1 if target probability ≥ 1.0
 
 #### Utility
 `getRateUpItems(): string[]`
 - Returns names of all items marked with `rateUp: true`
 
 `getAllItemDropRates(): Array<{name: string, dropRate: number, rarity: string}>`
-- Returns complete list of all items with their calculated drop rates and rarities
+- Returns a list of all items with:
+  - name: Item name
+  - dropRate: Calculated drop probability
+  - rarity: Associated rarity (or "flatRate" in flat mode)
 
 ## 🧪 Tests
 
