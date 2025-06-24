@@ -107,7 +107,7 @@ const pools = [
   {
     rarity: 'SSR',
     items: [
-      { name: 'God-Tier Rat', weight: 0.003, rateUp: true },
+      { name: 'Superior Rat', weight: 0.003, rateUp: true },
       { name: 'Dumpster King', weight: 0.002 }
     ]
   },
@@ -129,30 +129,27 @@ const engine = new GachaEngine({ mode: 'flatRate', pools });
 
 console.log('Roll x5:', engine.roll(5).join(', '));
 
-const dropRate = engine.getItemDropRate('God-Tier Rat');
-console.log('Drop rate for God-Tier Rat:', (dropRate * 100) + '%');
+const dropRate = engine.getItemDropRate('Superior Rat');
+console.log('Drop rate for Superior Rat:', (dropRate * 100) + '%');
 // 0.3%
 
-const cumulative = engine.getCumulativeProbabilityForItem('God-Tier Rat', 500);
+const cumulative = engine.getCumulativeProbabilityForItem('Superior Rat', 500);
 console.log('Chance after 500 rolls:', (cumulative * 100).toFixed(1) + '%');
 // ~78.5%
 
-const rollsFor50 = engine.getRollsForTargetProbability('God-Tier Rat', 0.5);
+const rollsFor50 = engine.getRollsForTargetProbability('Superior Rat', 0.5);
 console.log('Rolls for 50% chance:', rollsFor50);
 // ~231
 
 console.log('Rate-up items:', engine.getRateUpItems().join(', '));
-// God-Tier Rat
-
-console.log('All items:', engine.getAllItems().join(', '));
-// God-Tier Rat, Dumpster King, Sleepy Chef, Unknown Student
+// Superior Rat
 ```
 
 **UMD (Browser, Weighted Mode)**
 ```html
 <script src="https://unpkg.com/@allemandi/gacha-engine"></script>
 <script>
-  const { GachaEngine } = window.AllemandiGachaEngine;
+  const { GachaEngine } = AllemandiGachaEngine;
 
   const engine = new GachaEngine({
     mode: 'weighted',
