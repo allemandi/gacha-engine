@@ -1,0 +1,29 @@
+{
+    "name": "@allemandi/gacha-engine",
+    "version": "0.1.0",
+    "description": "Utils for gacha probability calculations and simulations",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "source": "src/index.ts",
+    "unpkg": "dist/index.umd.js",
+    "repository": "https://github.com/allemandi/gacha-engine.git",
+    "author": "allemandi <69766017+allemandi@users.noreply.github.com>",
+    "license": "MIT",
+    "type": "module",
+    "scripts": {
+        "build": "microbundle --name AllemandiGachaEngine",
+        "test": "vitest run",
+        "dev:test": "vitest"
+    },
+    "keywords": [
+        "gacha",
+        "probability",
+        "rate-up",
+        "simulator"
+    ],
+    "devDependencies": {
+        "microbundle": "^0.15.1",
+        "typescript": "^5.8.3",
+        "vitest": "^3.2.4"
+    }
+}
