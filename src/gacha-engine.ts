@@ -14,8 +14,6 @@ export class GachaEngine {
   private rarityRatesScaled: Record<string, number> = {};
   private flatRateMap: Map<string, number> = new Map();
   private dropRateCacheScaled = new Map<string, number>();
-
-  // NEW: Cache rate-up items for flatRate mode
   private flatRateRateUpItems: string[] = [];
 
   constructor(config: GachaEngineConfig) {
