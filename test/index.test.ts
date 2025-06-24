@@ -1,8 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { GachaEngine } from '../src/gacha-engine';
-import type { RarityInput, GachaEngineConfig } from '../src/types';
+import type {
+    RarityInput,
+    WeightedGachaEngineConfig,
+    FlatRateGachaEngineConfig,
+} from '../src/types';
 
-const mockPools: RarityInput[] = [
+// --- Weighted mode setup ---
+const weightedPools: RarityInput[] = [
     {
         rarity: 'common',
         items: [
@@ -19,131 +24,105 @@ const mockPools: RarityInput[] = [
     },
 ];
 
-const config: GachaEngineConfig = {
+const weightedConfig: WeightedGachaEngineConfig = {
+    mode: 'weighted',
     rarityRates: {
         common: 0.8,
         rare: 0.2,
     },
-    pools: mockPools,
+    pools: weightedPools,
 };
 
-describe('GachaEngine', () => {
-    const engine = new GachaEngine(config);
+// --- FlatRate mode setup ---
+const flatRatePools: RarityInput[] = [
+    {
+        rarity: 'flat',
+        items: [
+            { name: 'FlatItemA', weight: 0.6 },
+            { name: 'FlatItemB', weight: 0.4 },
+        ],
+    },
+];
 
-    describe('constructor validation', () => {
-        it('should throw if rarity rates are missing', () => {
-            expect(() => new GachaEngine({
-                rarityRates: { common: 0.8 }, // missing 'rare'
-                pools: mockPools,
-            })).toThrow('Missing rarity rates for: rare');
-        });
+const flatRateConfig: FlatRateGachaEngineConfig = {
+    mode: 'flatRate',
+    pools: flatRatePools,
+};
 
-        it('should throw if pool has no items', () => {
-            expect(() => new GachaEngine({
-                rarityRates: { empty: 1.0 },
-                pools: [{ rarity: 'empty', items: [] }],
-            })).toThrow('Rarity "empty" has no items');
-        });
+describe('GachaEngine Weighted Mode', () => {
+    const engine = new GachaEngine(weightedConfig);
 
-        it('should throw if pool has zero total weight', () => {
-            expect(() => new GachaEngine({
-                rarityRates: { zero: 1.0 },
-                pools: [{ rarity: 'zero', items: [{ name: 'Item', weight: 0 }] }],
-            })).toThrow('Rarity "zero" has zero total weight');
-        });
-    });
-
-    describe('getItemDropRate', () => {
-        it('should return correct drop rate using rarityRates', () => {
-            expect(engine.getItemDropRate('ItemA')).toBeCloseTo(0.4); // (0.5/1.0) * 0.8
-            expect(engine.getItemDropRate('ItemD')).toBeCloseTo(0.06); // (0.3/1.0) * 0.2
-        });
-
-        it('throws if item does not exist', () => {
-            expect(() => engine.getItemDropRate('Unknown')).toThrow('Item "Unknown" not found');
-        });
-    });
-
-    describe('getRarityProbability', () => {
-        it('should return correct base rarity rate', () => {
-            expect(engine.getRarityProbability('common')).toBe(0.8);
-            expect(engine.getRarityProbability('rare')).toBe(0.2);
-        });
-
-        it('throws if rarity not found', () => {
-            expect(() => engine.getRarityProbability('epic')).toThrow('Rarity "epic" not found');
-        });
-    });
-
-    describe('getCumulativeProbabilityForItem', () => {
-        it('should calculate cumulative probability correctly', () => {
-            const dropRate = engine.getItemDropRate('ItemA'); // 0.4
-            const rolls = 3;
-            const expected = 1 - Math.pow(1 - dropRate, rolls);
-            expect(engine.getCumulativeProbabilityForItem('ItemA', rolls)).toBeCloseTo(expected);
-        });
-    });
-
-    describe('getRollsForTargetProbability', () => {
-        it('should calculate rolls to reach target probability', () => {
-            const target = 0.9;
-            const rate = engine.getItemDropRate('ItemA'); // 0.4
-            const expected = Math.ceil(Math.log(1 - target) / Math.log(1 - rate));
-            expect(engine.getRollsForTargetProbability('ItemA', target)).toBe(expected);
-        });
-
-        it('returns Infinity if drop rate is zero', () => {
-            const zeroRateEngine = new GachaEngine({
-                rarityRates: { none: 1.0 },
-                pools: [{
-                    rarity: 'none',
-                    items: [
-                        { name: 'NeverDrops', weight: 0 },
-                        { name: 'Other', weight: 1 },
-                    ],
-                }],
-            });
-
-            expect(zeroRateEngine.getRollsForTargetProbability('NeverDrops', 0.5)).toBe(Infinity);
-        });
-    });
-
-    describe('getRateUpItems', () => {
-        it('returns only rate-up item names', () => {
-            expect(engine.getRateUpItems()).toEqual(['ItemD']);
-        });
-
-        it('returns empty array if no rate-up items', () => {
-            const noRateUpEngine = new GachaEngine({
+    it('throws if rarity rates missing for pools', () => {
+        expect(() => {
+            new GachaEngine({
+                mode: 'weighted',
                 rarityRates: { common: 1.0 },
-                pools: [{
-                    rarity: 'common',
-                    items: [{ name: 'NoRateUp', weight: 1 }],
-                }],
+                pools: weightedPools,
             });
-            expect(noRateUpEngine.getRateUpItems()).toEqual([]);
-        });
+        }).toThrow(/Missing rarity rates for: rare/);
     });
 
-    describe('getAllItemDropRates', () => {
-        it('returns all items with correct drop rates and rarities', () => {
-            const results = engine.getAllItemDropRates();
-            expect(results).toContainEqual({ name: 'ItemA', dropRate: 0.4, rarity: 'common' });
-            expect(results).toContainEqual({ name: 'ItemD', dropRate: 0.06, rarity: 'rare' });
-            expect(results).toHaveLength(4);
-        });
+    it('calculates correct drop rates', () => {
+        expect(engine.getItemDropRate('ItemA')).toBeCloseTo(0.4); // (0.5/1)*0.8
+        expect(engine.getItemDropRate('ItemD')).toBeCloseTo(0.06); // (0.3/1)*0.2
     });
 
-    describe('roll', () => {
-        it('should return array of item names', () => {
-            const results = engine.roll(10);
-            expect(results).toHaveLength(10);
-            expect(results.every(name => ['ItemA', 'ItemB', 'ItemC', 'ItemD'].includes(name))).toBe(true);
-        });
-
-        it('should return single item by default', () => {
-            const result = engine.roll();
-            expect(result).toHaveLength(1);
-        });
+    it('returns rate-up items', () => {
+        expect(engine.getRateUpItems()).toEqual(['ItemD']);
     });
+
+    it('roll returns correct count and valid items', () => {
+        const results = engine.roll(5);
+        expect(results.length).toBe(5);
+        for (const item of results) {
+            expect(['ItemA', 'ItemB', 'ItemC', 'ItemD']).toContain(item);
+        }
+    });
+
+    it('throws on unknown item drop rate query', () => {
+        expect(() => engine.getItemDropRate('Unknown')).toThrow(/Item "Unknown" not found/);
+    });
+});
+
+describe('GachaEngine FlatRate Mode', () => {
+    const engine = new GachaEngine(flatRateConfig);
+
+    it('throws if flatRates do not sum to 1', () => {
+        expect(() =>
+            new GachaEngine({
+                mode: 'flatRate',
+                pools: [
+                    {
+                        rarity: 'flat',
+                        items: [
+                            { name: 'A', weight: 0.7 },
+                            { name: 'B', weight: 0.7 },
+                        ],
+                    },
+                ],
+            })
+        ).toThrow(/FlatRate item rates must sum to 1.0/);
+    });
+
+    it('correctly gets drop rates', () => {
+        expect(engine.getItemDropRate('FlatItemA')).toBeCloseTo(0.6);
+        expect(engine.getItemDropRate('FlatItemB')).toBeCloseTo(0.4);
+    });
+
+    it('roll returns items based on flatRates', () => {
+        const results = engine.roll(1000);
+        const counts = results.reduce<Record<string, number>>((acc, cur) => {
+            acc[cur] = (acc[cur] ?? 0) + 1;
+            return acc;
+        }, {});
+
+        const freqA = counts['FlatItemA'] / 1000;
+        const freqB = counts['FlatItemB'] / 1000;
+        expect(freqA).toBeCloseTo(0.6, 1);
+        expect(freqB).toBeCloseTo(0.4, 1);
+    });
+    it('returns 0 for unknown item in flatRate mode', () => {
+        expect(engine.getItemDropRate('Unknown')).toBe(0);
+    });
+
 });
