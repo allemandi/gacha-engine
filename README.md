@@ -200,13 +200,13 @@ console.log('All items:', engine.getAllItems().join(', '));
   // ~86.6%
 
   console.log('Rolls for 75% chance:', rolls);
-  // ~139
+  // ~138
 
   console.log('Rate-up items:', engine.getRateUpItems().join(', '));
   // Park Master
 
-  console.log('All items:', engine.getAllItems().join(', '));
-  // Trash Wizard, Park Master, Street Sweeper, Bench Philosopher, Bus Stop Ghost
+  console.log('All items:', engine.getAllItemDropRates().map(i => i.name));
+  // ["Trash Wizard", "Park Master", "Street Sweeper", "Bench Philosopher", "Bus Stop Ghost"]
 </script>
 ```
 
