@@ -14,9 +14,9 @@ export class GachaEngine {
     private validateConfig(): void {
         const configuredRarities = new Set(Object.keys(this.rarityRates));
         const usedRarities = new Set(this.pools.map(p => p.rarity));
-        const missing = [...usedRarities].filter(r => !configuredRarities.has(r));
-        if (missing.length > 0) {
-            throw new Error(`Missing rarity rates for: ${missing.join(', ')}`);
+        const missingArray = Array.from(usedRarities).filter(r => !configuredRarities.has(r));
+        if (missingArray.length > 0) {
+            throw new Error(`Missing rarity rates for: ${missingArray.join(', ')}`);
         }
 
         for (const pool of this.pools) {
