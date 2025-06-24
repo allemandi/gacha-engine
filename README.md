@@ -3,14 +3,18 @@
 [![NPM Version](https://img.shields.io/npm/v/@allemandi/gacha-engine)](https://www.npmjs.com/package/@allemandi/gacha-engine)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/allemandi/gacha-engine/blob/main/LICENSE)
 
-> Practical toolkit for simulating and understanding gacha rates and rate-ups.
+> **Practical, type-safe toolkit for simulating and understanding gacha rates and rate-ups.**
+> 
+> Works in Node.js, browsers – supports ESM, CommonJS, and UMD
 
+<!-- omit from toc -->
 ## 🔖 Table of Contents
-- [🔖 Table of Contents](#-table-of-contents)
 - [✨ Features](#-features)
 - [🛠️ Installation](#️-installation)
 - [🚀 Quick Usage Examples](#-quick-usage-examples)
 - [📘 API](#-api)
+- [🧪 Tests](#-tests)
+- [🔗 Related Projects](#-related-projects)
 - [🤝 Contributing](#-contributing)
 
 
@@ -31,19 +35,17 @@ npm install @allemandi/gacha-engine
 
 ## 🚀 Quick Usage Examples
 
-> 📘 For a complete list of methods and options, see [the API docs](https://github.com/allemandi/embed-utils/blob/main/docs/API.md).
-
 **ESM**
 ```js
 import { GachaEngine } from '@allemandi/gacha-engine';
-
 
 const pools = [
   {
     rarity: 'SSR',
     items: [
       { name: 'Ultra Sword', probability: 0.01, rateUp: true },
-      { name: 'Magic Wand', probability: 0.02 }
+      { name: 'Magic Wand', probability: 0.02 },
+      { name: 'Useless SSR Loot', probability: 0.97 }
     ]
   },
   {
@@ -81,7 +83,7 @@ const { GachaEngine } = require('@allemandi/gacha-engine');
 ```
 
 **UMD**
-```js
+```html
  <script src="https://unpkg.com/@allemandi/gacha-engine"></script>
   <script>
     const engine = new window.AllemandiGachaEngine.GachaEngine({
@@ -125,6 +127,26 @@ Creates a new GachaEngine instance.
 
 `getAllItemDropRates(): { name: string; dropRate: number; rarity: string }[]`
 - Returns an array of all items with their calculated drop rates and rarities.
+
+## 🧪 Tests
+
+> Available in the GitHub repo only.
+
+```bash
+# Run the test suite with Jest
+yarn test
+# or
+npm test
+```
+
+## 🔗 Related Projects
+Check out these related projects that might interest you:
+
+**[@allemandi/embed-utils](https://github.com/allemandi/embed-utils)**
+- Fast, type-safe utilities for vector embedding comparison and search.
+
+**[Embed Classify CLI](https://github.com/allemandi/embed-classify-cli)**
+- Node.js CLI tool for local text classification using word embeddings.
 
 ## 🤝 Contributing
 If you have ideas, improvements, or new features:

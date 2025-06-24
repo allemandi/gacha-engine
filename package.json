@@ -1,11 +1,12 @@
 {
     "name": "@allemandi/gacha-engine",
     "version": "0.1.0",
-    "description": "Utils for gacha probability calculations and simulations",
-    "main": "./dist/index.js",
+    "description": "Practical, type-safe toolkit for simulating and understanding gacha rates and rate-ups.",
+    "main": "dist/index.cjs",
+    "module": "dist/index.module.js",
     "types": "./dist/index.d.ts",
-    "source": "src/index.ts",
     "unpkg": "dist/index.umd.js",
+    "source": "src/index.ts",
     "repository": "https://github.com/allemandi/gacha-engine.git",
     "author": "allemandi <69766017+allemandi@users.noreply.github.com>",
     "license": "MIT",
@@ -13,15 +14,29 @@
     "scripts": {
         "build": "microbundle --name AllemandiGachaEngine",
         "test": "vitest run",
-        "dev:test": "vitest"
+        "dev:test": "vitest",
+        "lint": "eslint src --ext .ts"
     },
     "keywords": [
         "gacha",
-        "probability",
+        "gacha-engine",
         "rate-up",
-        "simulator"
+        "probability",
+        "simulation",
+        "gacha-simulator",
+        "lootbox",
+        "random-drop",
+        "gaming",
+        "game-probability",
+        "rolls",
+        "typescript",
+        "type-safe",
+        "drop-rate"
     ],
     "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^8.35.0",
+        "@typescript-eslint/parser": "^8.35.0",
+        "eslint": "^9.29.0",
         "microbundle": "^0.15.1",
         "typescript": "^5.8.3",
         "vitest": "^3.2.4"
