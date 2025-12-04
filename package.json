@@ -1,13 +1,13 @@
 {
     "name": "@allemandi/gacha-engine",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Practical, type-safe toolkit for simulating and understanding gacha rates and rate-ups.",
     "main": "dist/index.cjs",
     "module": "dist/index.module.js",
     "types": "./dist/index.d.ts",
     "unpkg": "dist/index.umd.js",
     "source": "src/index.ts",
-     "exports": {
+    "exports": {
         "import": {
             "types": "./dist/index.d.ts",
             "default": "./dist/index.module.js"
@@ -17,7 +17,7 @@
             "default": "./dist/index.cjs"
         }
     },
-      "files": [
+    "files": [
         "dist",
         "README.md",
         "LICENSE"
@@ -51,7 +51,7 @@
     "devDependencies": {
         "@typescript-eslint/eslint-plugin": "^8.35.0",
         "@typescript-eslint/parser": "^8.35.0",
-        "eslint": "^9.29.0",
+        "eslint": "^9.39.1",
         "microbundle": "^0.15.1",
         "typescript": "^5.8.3",
         "vitest": "^3.2.4"
