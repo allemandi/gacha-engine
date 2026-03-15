@@ -4,7 +4,8 @@ import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import resolve from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
-import typescript from '@rollup/plugin-typescript'; 
+import typescript from '@rollup/plugin-typescript';
+import { dts } from 'rollup-plugin-dts';
 
 const require = createRequire(import.meta.url);
 /** @type {import('./package.json')} */
@@ -28,11 +29,10 @@ const plugins = [
   resolve({ extensions: ['.ts', '.mjs', '.js', '.json'], browser: true }),
   commonjs(),
   json(),
-  typescript({ // Add TypeScript plugin
-    declaration: true,
-    declarationDir: './dist',
+  typescript({
+    declaration: false,
     rootDir: './src',
-    exclude: ['**/*.test.ts', '**/*.spec.ts'], // Exclude test files
+    exclude: ['**/*.test.ts', '**/*.spec.ts'],
   }),
 ];
 
@@ -79,6 +79,16 @@ export default [
       compact: true,
       sourcemap: true,
       globals: Object.fromEntries(peerDeps.map((d) => [d, d])),
+    },
+  },
+
+  // Bundled Types
+  {
+    input: 'src/index.ts',
+    plugins: [dts()],
+    output: {
+      file: pkg.types,
+      format: 'es',
     },
   },
 ];
