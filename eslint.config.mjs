@@ -1,34 +1,32 @@
-import { defineConfig } from "eslint/config";
-import typescriptEslint from "@typescript-eslint/eslint-plugin";
-import tsParser from "@typescript-eslint/parser";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import js from "@eslint/js";
-import { FlatCompat } from "@eslint/eslintrc";
+import eslint from '@eslint/js';
+import tseslint from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
-});
-
-export default defineConfig([{
-    
-    ignores: ["dist/**"],
-
-    extends: compat.extends("eslint:recommended", "plugin:@typescript-eslint/recommended"),
-
-    plugins: {
-        "@typescript-eslint": typescriptEslint,
-    },
-
+export default [
+  // Base ESLint recommended rules
+  eslint.configs.recommended,
+  
+  // TypeScript configuration
+  {
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
-        parser: tsParser,
+      parser: tsParser,
+      parserOptions: {
         ecmaVersion: 2020,
-        sourceType: "module",
+        sourceType: 'module',
+      },
     },
-
-    rules: {},
-}]);
+    plugins: {
+      '@typescript-eslint': tseslint,
+    },
+    rules: {
+      // Include TypeScript recommended rules
+      ...tseslint.configs.recommended.rules,
+    },
+  },
+  
+  // Ignore patterns
+  {
+    ignores: ['dist/**', 'node_modules/**'],
+  },
+];
