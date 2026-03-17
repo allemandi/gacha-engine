@@ -29,6 +29,7 @@
     "scripts": {
         "build": "rollup -c",
         "test": "vitest run",
+        "test:dist": "node test/smoke-cjs.cjs && node test/smoke-esm.mjs && node test/smoke-umd.cjs",
         "dev:test": "vitest",
         "lint": "eslint ."
     },
