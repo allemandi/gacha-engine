@@ -1,17 +1,5 @@
-// Mocking global objects to test UMD in Node.js environment
-const myExports = {};
-const myModule = { exports: myExports };
-
-const fs = require('fs');
-const path = require('path');
-const umdCode = fs.readFileSync(path.join(__dirname, '../dist/index.umd.js'), 'utf8');
-
-// Evaluate UMD code in a context where 'exports' and 'module' are defined
-(function(exports, module) {
-    eval(umdCode);
-})(myExports, myModule);
-
-const { GachaEngine } = myModule.exports;
+require('../dist/index.umd.js');
+const { GachaEngine } = global.AllemandiGachaEngine;
 const assert = require('assert');
 
 const config = {
