@@ -17,7 +17,7 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn lint
 
-  test:
+  build:
     needs: lint
     runs-on: ubuntu-latest
     steps:
@@ -27,10 +27,12 @@ jobs:
           node-version: 20
           cache: 'yarn'
       - run: yarn install --frozen-lockfile
-      - run: yarn test
+      - run: yarn build
+      - name: Verify build artifacts (Smoke tests)
+        run: yarn test:dist
 
-  build:
-    needs: test
+  test:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -39,4 +41,4 @@ jobs:
           node-version: 20
           cache: 'yarn'
       - run: yarn install --frozen-lockfile
-      - run: yarn build
+      - run: yarn test
