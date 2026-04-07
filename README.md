@@ -52,17 +52,17 @@ const pools = [
   {
     rarity: 'SSR',
     items: [
-      { name: 'Super Hobo', weight: 0.8, rateUp: true },
-      { name: 'Broke King', weight: 0.4 },
-      { name: 'Cardboard Hero', weight: 0.4 }
+      { name: 'Super Hobo', weight: 1.0, rateUp: true },
+      { name: 'Broke King', weight: 0.5 },
+      { name: 'Cardboard Hero', weight: 0.5 }
     ]
   },
   {
     rarity: 'SR',
     items: [
-      { name: 'Cold Salaryman', weight: 1.5, rateUp: true },
-      { name: 'Numb Artist', weight: 1.8 },
-      { name: 'Crying Cook', weight: 1.8 }
+      { name: 'Cold Salaryman', weight: 2.5, rateUp: true },
+      { name: 'Numb Artist', weight: 1.25 },
+      { name: 'Crying Cook', weight: 1.25 }
     ]
   },
   {
@@ -86,11 +86,11 @@ console.log('10 rolls:', engine.roll(10).join(', '));
 
 const rate = engine.getItemDropRate('Super Hobo');
 console.log('Drop rate for Super Hobo:', (rate * 100) + '%');
-// ~0.4% → (0.8 / 1.6) * 0.01 = 0.005 → 0.5%
+// (1.0 / 2.0) * 0.01 = 0.005 → 0.5%
 
 const cumulative = engine.getCumulativeProbabilityForItem('Super Hobo', 300);
-console.log('Probability in 300 rolls:', (cumulative * 100) + '%');
-// ~77.7%
+console.log('Probability in 300 rolls:', (cumulative * 100).toFixed(1) + '%');
+// ~77.8%
 
 console.log('Rolls for 50% chance:', engine.getRollsForTargetProbability('Super Hobo', 0.5));
 // 139
@@ -107,20 +107,20 @@ const pools = [
   {
     rarity: 'SSR',
     items: [
-      { name: 'Superior Rat', weight: 0.003, rateUp: true },
+      { name: 'Superior Rat', weight: 0.008, rateUp: true },
       { name: 'Dumpster King', weight: 0.002 }
     ]
   },
   {
     rarity: 'SR',
     items: [
-      { name: 'Sleepy Chef', weight: 0.015 }
+      { name: 'Sleepy Chef', weight: 0.04 }
     ]
   },
   {
     rarity: 'R',
     items: [
-      { name: 'Unknown Student', weight: 0.1 }
+      { name: 'Unknown Student', weight: 0.95 }
     ]
   }
 ];
@@ -131,15 +131,15 @@ console.log('Roll x5:', engine.roll(5).join(', '));
 
 const dropRate = engine.getItemDropRate('Superior Rat');
 console.log('Drop rate for Superior Rat:', (dropRate * 100) + '%');
-// 0.3%
+// 0.8%
 
-const cumulative = engine.getCumulativeProbabilityForItem('Superior Rat', 500);
-console.log('Chance after 500 rolls:', (cumulative * 100).toFixed(1) + '%');
-// ~78.5%
+const cumulative = engine.getCumulativeProbabilityForItem('Superior Rat', 200);
+console.log('Chance after 200 rolls:', (cumulative * 100).toFixed(1) + '%');
+// ~80.0%
 
 const rollsFor50 = engine.getRollsForTargetProbability('Superior Rat', 0.5);
 console.log('Rolls for 50% chance:', rollsFor50);
-// ~231
+// ~87
 
 console.log('Rate-up items:', engine.getRateUpItems().join(', '));
 // Superior Rat
@@ -162,15 +162,15 @@ console.log('Rate-up items:', engine.getRateUpItems().join(', '));
       {
         rarity: 'SSR',
         items: [
-          { name: 'Trash Wizard', weight: 1.0 },
-          { name: 'Park Master', weight: 1.0, rateUp: true }
+          { name: 'Trash Wizard', weight: 0.5 },
+          { name: 'Park Master', weight: 1.5, rateUp: true }
         ]
       },
       {
         rarity: 'SR',
         items: [
-          { name: 'Street Sweeper', weight: 2.0 },
-          { name: 'Bench Philosopher', weight: 1.0 }
+          { name: 'Street Sweeper', weight: 1.0 },
+          { name: 'Bench Philosopher', weight: 3.0, rateUp: true }
         ]
       },
       {
@@ -188,13 +188,13 @@ console.log('Rate-up items:', engine.getRateUpItems().join(', '));
 
   console.log('1x Roll:', engine.roll());
   console.log('Drop rate for Park Master:', (rate * 100).toFixed(2) + '%');
-  // 1.0 / 2.0 * 0.02 = 0.01 → 1.00%
+  // 1.5 / 2.0 * 0.02 = 0.015 → 1.50%
 
   console.log('Cumulative 200 rolls:', (cumulative * 100).toFixed(1) + '%');
-  // ~86.6%
+  // ~95.1%
 
   console.log('Rolls for 75% chance:', rolls);
-  // ~138
+  // ~92
 
   console.log('Rate-up items:', engine.getRateUpItems().join(', '));
   // Park Master
