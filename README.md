@@ -16,6 +16,8 @@
 - [🛠️ Installation](#️-installation)
 - [🚀 Quick Usage Examples](#-quick-usage-examples)
 - [📘 API](#-api)
+  - [Constructor](#constructor)
+  - [Methods](#methods)
 - [🧪 Tests](#-tests)
 - [🔗 Related Projects](#-related-projects)
 - [🤝 Contributing](#-contributing)
@@ -135,11 +137,11 @@ console.log('Drop rate for Superior Rat:', (dropRate * 100) + '%');
 
 const cumulative = engine.getCumulativeProbabilityForItem('Superior Rat', 200);
 console.log('Chance after 200 rolls:', (cumulative * 100).toFixed(1) + '%');
-// ~80.0%
+// 79.9%
 
 const rollsFor50 = engine.getRollsForTargetProbability('Superior Rat', 0.5);
 console.log('Rolls for 50% chance:', rollsFor50);
-// ~87
+// 87
 
 console.log('Rate-up items:', engine.getRateUpItems().join(', '));
 // Superior Rat
@@ -191,13 +193,13 @@ console.log('Rate-up items:', engine.getRateUpItems().join(', '));
   // 1.5 / 2.0 * 0.02 = 0.015 → 1.50%
 
   console.log('Cumulative 200 rolls:', (cumulative * 100).toFixed(1) + '%');
-  // ~95.1%
+  // "95.1%"
 
   console.log('Rolls for 75% chance:', rolls);
-  // ~92
+  // 92
 
   console.log('Rate-up items:', engine.getRateUpItems().join(', '));
-  // Park Master
+  // "Park Master, Bench Philosopher"
 
   console.log('All items:', engine.getAllItemDropRates().map(i => i.name));
   // ["Trash Wizard", "Park Master", "Street Sweeper", "Bench Philosopher", "Bus Stop Ghost"]
