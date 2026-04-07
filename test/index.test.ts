@@ -18,8 +18,8 @@ const weightedPools: RarityInput[] = [
     {
         rarity: 'rare',
         items: [
-            { name: 'ItemC', weight: 0.7 },
-            { name: 'ItemD', weight: 0.3, rateUp: true },
+            { name: 'ItemC', weight: 0.2 },
+            { name: 'ItemD', weight: 0.8, rateUp: true },
         ],
     },
 ];
@@ -64,7 +64,7 @@ describe('GachaEngine Weighted Mode', () => {
 
     it('calculates correct drop rates', () => {
         expect(engine.getItemDropRate('ItemA')).toBeCloseTo(0.4); // (0.5/1)*0.8
-        expect(engine.getItemDropRate('ItemD')).toBeCloseTo(0.06); // (0.3/1)*0.2
+        expect(engine.getItemDropRate('ItemD')).toBeCloseTo(0.16); // (0.8/1)*0.2
     });
 
     it('returns rate-up items', () => {
