@@ -32,4 +32,4 @@ jobs:
       # npm publish using OIDC (Yarn publish cannot use OIDC)
       - name: Publish to npm
         run: |
-          npm publish --provenance --access public
+          npx npm@latest publish --provenance --access public
