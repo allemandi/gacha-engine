@@ -17,7 +17,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           registry-url: 'https://registry.npmjs.org/'
           cache: 'yarn'
 
@@ -32,5 +32,4 @@ jobs:
       # npm publish using OIDC (Yarn publish cannot use OIDC)
       - name: Publish to npm
         run: |
-          npm install -g npm@latest
           npm publish --provenance --access public
