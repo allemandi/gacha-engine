@@ -4,16 +4,29 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-
+    open-pull-requests-limit: 10
     groups:
       patch-updates:
         patterns: ["*"]
         update-types: ["patch"]
-
       minor-updates:
         patterns: ["*"]
         update-types: ["minor"]
-
       major-updates:
+        patterns: ["*"]
+        update-types: ["major"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions-patch-updates:
+        patterns: ["*"]
+        update-types: ["patch"]
+      actions-minor-updates:
+        patterns: ["*"]
+        update-types: ["minor"]
+      actions-major-updates:
         patterns: ["*"]
         update-types: ["major"]
