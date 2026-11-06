@@ -5,6 +5,9 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     groups:
       patch-updates:
         patterns: ["*"]
@@ -12,15 +15,15 @@ updates:
       minor-updates:
         patterns: ["*"]
         update-types: ["minor"]
-      major-updates:
-        patterns: ["*"]
-        update-types: ["major"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     groups:
       actions-patch-updates:
         patterns: ["*"]
@@ -28,6 +31,3 @@ updates:
       actions-minor-updates:
         patterns: ["*"]
         update-types: ["minor"]
-      actions-major-updates:
-        patterns: ["*"]
-        update-types: ["major"]
